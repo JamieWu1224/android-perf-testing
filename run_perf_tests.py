@@ -47,10 +47,11 @@ def perform_test(device, package_name):
     test_runner = (package_name + '.test' +
                    '/android.support.test.runner.AndroidJUnitRunner')
 
-    cmd = "adb shell am instrument -w com.google.android.perftesting.test/android.support.test.runner.AndroidJUnitRunner"
+    cmd = "adb shell am instrument"
     cmd = "%s -e listener com.google.android.perftesting.TestListener" % cmd
     cmd = "%s -e annotation com.google.android.perftesting.common.PerfTest" % cmd
     cmd = "%s -e disableAnalytics true" % cmd
+    cmd = "%s -w com.google.android.perftesting.test/android.support.test.runner.AndroidJUnitRunner" % cmd
     subprocess.call(cmd, shell=True)
     # Run the test and print the timing result.
     #print device.instrument(test_runner, params)['stream']
