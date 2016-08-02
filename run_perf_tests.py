@@ -17,6 +17,8 @@ collecting batterystats, location request information, and a systrace.
 """
 
 from __future__ import with_statement
+from xml.etree import ElementTree, cElementTree
+from xml.dom import minidom
 
 import os
 import shutil
@@ -268,6 +270,7 @@ def analyze_data_files(dest_dir):
                     dump_results = parse_dump_file(full_filename)
                     jank_perc = dump_results['jank_percent']
                     if jank_perc:
+                        generate_xml(str(jank_perc))
                         if jank_perc > JANK_THRESHOLD:
                             print ('FAIL: High level of janky frames ' +
                                    'detected (' + str(jank_perc) + '%)' +
@@ -297,6 +300,15 @@ def analyze_data_files(dest_dir):
     else:
         print '\nOVERALL: FAILED. See above for more information.'
         return 1
+def generate_xml(jank_perc):
+    root = ElementTree.Element('root')
+    child1 = ElementTree.SubElement(root, 'doc')
+    child1_1 = ElementTree.SubElement(child1, 'Jankyframes')
+    child1_1.text = jank_perc + "%"
+    print ElementTree.tostring(root)
+    t = minidom.parseString(ElementTree.tostring(root)).toprettyxml()
+    tree1 = ElementTree.ElementTree(ElementTree.fromstring(t))
+    tree1.write("testing.xml")
 
 
 def main():
